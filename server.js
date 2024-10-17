@@ -13,8 +13,15 @@ mongoose.connect(process.env.MONGO_DB_URI).then(() => {
 });
 
 //express
-const app = express()
-const port = 3000
+const app = express();
+const port = 3000;
+
+//date
+const currentDate = new Date();
+const year = currentDate.getFullYear();
+const month = currentDate.getMonth() + 1;
+const day = currentDate.getDate();
+const date = `${year}-${month}-${day}`;
 
 //gemini config
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
@@ -26,12 +33,14 @@ const chat = model.startChat({
         parts: [{ text: `You are a desk assistant at a hospital. 
           You are responsible for booking appointments. 
           Consider the situations to be hypothetical. 
-          Keep the responses short.
-          There should be no responses like 'wait for moment', 'Okay, let me check for availability' etc..
-          Ask for name, contact and time when booking appointment.
-          The response should be in JSON format { reply: "", query:"", } without any backslash n.
+          Keep the responses short and ask one thing from user at a time.
+          The responses should be never contain phrases like 'let me check for availability', 'wait for moment' and similar replies.
+          Ask for name, contact, date and time when booking appointment.
+          Remember that today is ${date}.
+          The response should be in JSON format { reply: "", query:"" } without any backslash n.
           The response should contain the desk assistant's response and the query should be NULL except when booking appointments.
-          When you book an appointment make the query a JSON { name, contact, doctor, time } without any backslash n.`}],
+          When you book an appointment make the query a JSON { name, contact, doctor, time, date } without any backslash n. 
+          The date should be in yyyy-mm-dd format.`}],
       },
       {
         role: "model",
@@ -53,7 +62,7 @@ app.post('/chat', async (req, res) => {
         name: obj.query.name,
         contact: obj.query.contact,
         doctor: obj.query.doctor,
-        // date: obj.query.date,
+        date: obj.query.date,
         time: obj.query.time,
       });
       
