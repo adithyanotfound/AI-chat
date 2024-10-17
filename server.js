@@ -77,7 +77,7 @@ const chat = model.startChat({
           There can be only 5 appointments in 1 hour.
           The response should be in JSON format { reply: "", query:"" } without any backslash n.
           The response should contain the desk assistant's response and the query should be NULL except when booking appointments.
-          When you book an appointment make the query a JSON { name, contact, doctor, time, date } without any backslash n. 
+          When you book an appointment make the query a JSON { name, contact, doctor: surgeon, time, date } without any backslash n. 
           The date should be in yyyy-mm-dd format.`}],
     },
     {
